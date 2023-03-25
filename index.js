@@ -25,6 +25,7 @@ mongoose
 const userSchema = new mongoose.Schema({
   name: String,
   email: String,
+  password: String,
 });
 
 const User = mongoose.model("User", userSchema);
@@ -33,28 +34,83 @@ const User = mongoose.model("User", userSchema);
 app.set("view engine", "ejs");
 
 //Authentiaction middleware
-const isAuthenticated = (req, res, next) => {
+const isAuthenticated = async (req, res, next) => {
   const token = req.cookies.token;
   if (token) {
+    const decoded=jwt.verify(token, "khdjsfjkhsfd");
+    req.user= await User.findById(decoded._id);
+    console.log(req.user);
     next();
   } else {
     res.render("login");
   }
 };
 
+
+
+
+
+
 //all routes
 app.get("/", isAuthenticated, (req, res) => {
-  res.render("logout");
+  console.log(req.user.name);
+  res.render("logout", { name: req.user.name });
 });
 
+
+app.get("/register",(req,res)=>{
+  res.render("register");
+})
+
+
+
+app.post("/register",async (req,res)=>{
+const { name, email, password } = req.body;
+console.log(req.body);
+let newUser = await User.findOne({ email });
+if (newUser) {
+ return res.redirect("/login");
+}
+const user = await User.create({
+  name,
+  email,
+  password
+});
+
+ 
+res.redirect("/");
+});
+  
+
 //login route
+app.get("/login",(req,res)=>{
+  res.render("login");
+})
+
+
+
+
 app.post("/login", async (req, res) => {
-  console.log(req.body);
-  const { name, email } = req.body;
+ 
+const { name, email ,password} = req.body;
+ let newUser = await User.findOne({email});
+ if (!newUser) {
+ return res.redirect("/register");
+ }
+ 
+
+
+  
   const user = await User.create({
     name,
     email,
+    password,
   });
+
+
+
+
+
   const token = jwt.sign({
     _id: user._id,
   },
@@ -64,7 +120,7 @@ console.log(token);
     httpOnly: true,
     expires: new Date(Date.now() + 60 * 1000),
   });
-  res.redirect("/");
+  res.render("success");
 });
 
 //logout route
