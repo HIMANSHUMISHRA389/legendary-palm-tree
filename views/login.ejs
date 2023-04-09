@@ -11,9 +11,9 @@
     <main>
         <form method="post" action="/login">
             <h1>Login here</h1>
-            <input type="text" name="name" placeholder="name">
-            <input type="text" name="email" placeholder="email">
-            <input type="password",name="password" placeholder="password">
+            <input type="text" name="email" placeholder="email" value="<%=locals.email%>">
+            <input type="password" name="password" placeholder="password">
+            <p class="error"> <%= locals.message %></p>
             <button>Login</button>
         </form>
     </main>

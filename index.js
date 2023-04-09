@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const bcrypt=require("bcrypt");
 
 //using middlewares
 app.use(express.static(path.join(path.resolve(), "public")));
@@ -42,7 +43,7 @@ const isAuthenticated = async (req, res, next) => {
     console.log(req.user);
     next();
   } else {
-    res.render("login");
+    res.redirect('/login');
   }
 };
 
@@ -62,66 +63,10 @@ app.get("/register",(req,res)=>{
   res.render("register");
 })
 
-
-
-app.post("/register",async (req,res)=>{
-const { name, email, password } = req.body;
-console.log(req.body);
-let newUser = await User.findOne({ email });
-if (newUser) {
- return res.redirect("/login");
-}
-const user = await User.create({
-  name,
-  email,
-  password
-});
-
- 
-res.redirect("/");
-});
-  
-
 //login route
 app.get("/login",(req,res)=>{
   res.render("login");
 })
-
-
-
-
-app.post("/login", async (req, res) => {
- 
-const { name, email ,password} = req.body;
- let newUser = await User.findOne({email});
- if (!newUser) {
- return res.redirect("/register");
- }
- 
-
-
-  
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
-
-
-
-
-  const token = jwt.sign({
-    _id: user._id,
-  },
-  "khdjsfjkhsfd");
-console.log(token);
-  res.cookie("token", token, {
-    httpOnly: true,
-    expires: new Date(Date.now() + 60 * 1000),
-  });
-  res.render("success");
-});
 
 //logout route
 app.get("/logout", (req, res) => {
@@ -131,6 +76,80 @@ app.get("/logout", (req, res) => {
   });
   res.redirect("/");
 });
+
+
+app.post("/register",async (req,res)=>{
+const { name, email, password } = req.body;
+console.log(req.body);
+let newUser = await User.findOne({ email });
+if (newUser) {
+ return res.redirect("/login");
+}
+
+const hashPassword=await bcrypt.hash(password,10);
+
+
+
+
+
+
+
+const user = await User.create({
+  name,
+  email,
+  password:hashPassword
+});
+
+ 
+res.redirect("/");
+});
+  
+
+
+
+
+
+
+app.post("/login", async (req, res) => {
+ 
+const { email ,password} = req.body;
+ let newUser = await User.findOne({email});
+ if (!newUser) {
+ return res.redirect("/register");
+ }
+ 
+const isMatch = await bcrypt.compare(password,newUser.password);
+if(!isMatch){
+ return res.render(
+  "login",{
+    email:email,
+    message:"wrong password"
+  });
+}
+   
+
+  const token = jwt.sign(
+    {
+      _id: newUser._id,
+    },
+    "khdjsfjkhsfd"
+  );
+
+  console.log(token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + 60 * 1000),
+  });
+  res.redirect("/");
+
+  
+  
+
+
+
+});
+
+
 
 app.listen(3000, (req, res) => {
   console.log("Server is up");

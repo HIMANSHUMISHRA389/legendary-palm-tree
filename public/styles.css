@@ -54,3 +54,9 @@ input{
     
 
 }
+.error{
+    color:red;
+    font-size: 0.7rem;
+    text-align: center;
+    margin: 1rem;
+}
