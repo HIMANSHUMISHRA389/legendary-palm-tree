@@ -2,11 +2,8 @@ import express, { Router } from "express";
 import {
   getAllUsers,
   register,
-  special,
-  getUserById,
-  updateUser,
-  deleteUser
-  
+  getMyProfile,
+  login,
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -14,19 +11,7 @@ const router = Router();
 router.get("/all", getAllUsers);
 
 router.post("/new", register);
+router.post("/login", login);
 
-
-
-
-router.route("/userid:id").get(getUserById).put(updateUser).delete(deleteUser);
-
-
-
-
-
-// router.get("/userid/:id", getUserById);
-
-// router.put("/userid/:id", updateUser);
-
-// router.delete("/userid/:id", deleteUser);
+router.get("/me",getMyProfile);
 export default router;
