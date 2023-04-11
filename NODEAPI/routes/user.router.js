@@ -15,7 +15,7 @@ router.get("/all", getAllUsers);
 
 router.post("/new", register);
 
-router.get("/userid/special", special);
+
 
 
 router.route("/userid:id").get(getUserById).put(updateUser).delete(deleteUser);

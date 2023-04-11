@@ -3,19 +3,25 @@ import mongoose from "mongoose";
  
 
 const schema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   email: {
     type: String,
-    unique:true,
+    unique: true,
+    required: true,
   },
   password: {
-    type:String,
-    select:false,
+    type: String,
+    select: false,
+    required: true,
   },
-  createAt:{
-    type:Date,
-    default:Date.now,
-  }
+  createAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const User = mongoose.model("User", schema);
