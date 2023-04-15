@@ -53,11 +53,26 @@ export const login = async (req, res) => {
   sendCookie(user, res, `Welcome back, ${user.name}`);
 };
 
+export const logout = async (req, res) => {
+  res
+    .status(200)
+    .cookie("token", "", {
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      user: req.user,
+    });
+};
+
 //getMyProfile
-export const getMyProfile = (req, res) => {
-  //const user= await User.findById(id);
+export const getMyProfile = async (req, res, ) => {
+  const { token } = req.cookies;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  
   res.status(200).json({
     success: true,
-    user: req.user,
+    user:req.user,
   });
 };

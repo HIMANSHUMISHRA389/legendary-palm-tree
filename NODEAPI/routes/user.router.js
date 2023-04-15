@@ -4,7 +4,9 @@ import {
   register,
   getMyProfile,
   login,
+  logout,
 } from "../controllers/user.controller.js";
+import isAuthenticated from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -12,6 +14,10 @@ router.get("/all", getAllUsers);
 
 router.post("/new", register);
 router.post("/login", login);
+router.get("/logout", logout);
 
-router.get("/me",getMyProfile);
+
+
+
+router.get("/me",isAuthenticated,getMyProfile);
 export default router;

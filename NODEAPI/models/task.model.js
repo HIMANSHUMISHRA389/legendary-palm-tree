@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import User from "./user.model.js";
+
 
 const schema = new mongoose.Schema({
   title: {
@@ -26,4 +28,4 @@ const schema = new mongoose.Schema({
 
 const Task = mongoose.model("Task", schema);
 
-export default User;
+export default Task;
